@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Validate notebook structure
+        run: |
+          python - <<'EOF'
+          import json
+          with open("ChestX-RayProject_123.ipynb", encoding="utf-8") as f:
+              nb = json.load(f)
+          assert nb.get("nbformat") == 4, "Unexpected notebook format"
+          assert len(nb["cells"]) > 0, "Notebook has no cells"
+          print(f"OK: {len(nb['cells'])} cells, nbformat {nb['nbformat']}")
+          EOF
+
+      - name: Syntax-check notebook code cells
+        run: |
+          python - <<'EOF'
+          import json, py_compile, tempfile, os
+          with open("ChestX-RayProject_123.ipynb", encoding="utf-8") as f:
+              nb = json.load(f)
+          lines = []
+          for cell in nb["cells"]:
+              if cell["cell_type"] != "code":
+                  continue
+              for line in cell["source"]:
+                  # Comment out IPython magics/shell commands (not valid Python syntax)
+                  if line.strip().startswith(("!", "%")):
+                      lines.append("# " + line)
+                  else:
+                      lines.append(line)
+              lines.append("\n")
+          with tempfile.NamedTemporaryFile("w", suffix=".py", delete=False, encoding="utf-8") as tmp:
+              tmp.write("".join(lines))
+              path = tmp.name
+          py_compile.compile(path, doraise=True)
+          os.unlink(path)
+          print("OK: notebook code cells compile")
+          EOF
