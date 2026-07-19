@@ -1,0 +1,8 @@
+# Install with: pip install -r requirements.txt
+# Tested with Python 3.10+ (Google Colab default runtime)
+
+kagglehub
+tensorflow>=2.15.0
+matplotlib
+numpy
+scikit-learn

@@ -1,0 +1,42 @@
+# Datasets (downloaded automatically via kagglehub at runtime)
+chest_xray/
+*.jpg
+*.jpeg
+*.png
+!docs/**/*.png
+
+# Jupyter
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Trained model artifacts
+*.h5
+*.keras
+*.pb
+saved_model/
+
+# Presentation / report materials (kept locally, not part of the source repo)
+*.pdf
+*.pptx
+*.docx
+
+# macOS / Windows junk
+.DS_Store
+__MACOSX/
+Thumbs.db
+desktop.ini
+
+# IDE
+.idea/
+.vscode/
+
+# Colab
+.config/
